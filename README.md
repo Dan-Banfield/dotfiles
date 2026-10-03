@@ -78,6 +78,38 @@ If the preview reports existing files that conflict, back them up outside this
 repository and move them aside before applying. Keep unrelated configuration
 files in place.
 
+## Package picker
+
+The `scripts` package installs `~/.local/bin/pkg-install`, a standalone
+adaptation of the previous Omarchy package pickers. Install its dependencies:
+
+```bash
+sudo pacman -S --needed fzf
+# AUR mode also requires yay, installed separately.
+```
+
+Run as your normal user:
+
+```bash
+pkg-install              # Official repositories
+pkg-install --aur       # AUR
+pkg-install browser     # Start with a search term
+pkg-install --aur cursor
+```
+
+Type to fuzzy filter the package names, use the arrow keys to navigate, press
+Tab to select multiple packages, then Enter to install. Esc or Ctrl+C cancels
+without installing. Alt+P toggles details, Alt+J/K scrolls the preview, and
+Alt+D/U scrolls by half a page. In AUR mode, Alt+B shows the PKGBUILD and
+Alt+Shift+B restores package details. The AUR list is fetched when opened;
+network access is required. Repository packages come from your local pacman
+sync databases; keep those current through normal system upgrades.
+
+Installation uses pacman or yay with their normal confirmation and build
+prompts, skipping already installed packages. No Omarchy services or scripts
+are required. Add `~/.local/bin` to your PATH, or invoke the command by its
+full path.
+
 ## Wallpapers
 
 The `wallpapers` package links the bundled collection into

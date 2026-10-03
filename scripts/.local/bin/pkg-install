@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+# Standalone adaptation of Omarchy's package and AUR fzf pickers.
+set -euo pipefail
+
+usage() {
+    printf 'Usage: pkg-install [--repo | --aur] [SEARCH ...]\n'
+    printf 'Browse official repository packages by default, or the AUR with --aur.\n'
+    printf 'Type to filter; Tab selects multiple packages; Enter installs; Esc cancels.\n'
+}
+
+fail() {
+    printf 'pkg-install: %s\n' "$*" >&2
+    exit 1
+}
+
+source_mode=repo
+case ${1:-} in
+    --aur)
+        source_mode=aur
+        shift
+        ;;
+    --repo)
+        shift
+        ;;
+    --help|-h)
+        usage
+        exit 0
+        ;;
+    --*)
+        usage >&2
+        exit 2
+        ;;
+esac
+
+command -v fzf >/dev/null || fail 'Install fzf first: sudo pacman -S --needed fzf'
+command -v pacman >/dev/null || fail 'This command requires Arch Linux and pacman.'
+if [[ $source_mode == aur ]]; then
+    (( EUID != 0 )) || fail 'Run the AUR picker as your normal user, not with sudo.'
+    command -v yay >/dev/null || fail 'Install yay first to browse and install AUR packages.'
+fi
+
+fzf_args=(
+    --multi
+    --query "$*"
+    --preview-label='alt-p: toggle description, alt-j/k: scroll, tab: multi-select'
+    --preview-label-pos='bottom'
+    --preview-window 'down:65%:wrap'
+    --bind 'alt-p:toggle-preview'
+    --bind 'alt-d:preview-half-page-down,alt-u:preview-half-page-up'
+    --bind 'alt-k:preview-up,alt-j:preview-down'
+    --color 'pointer:green,marker:green'
+)
+
+# Finish fetching the list before opening fzf, so a failed fetch cannot result
+# in installing from incomplete output. Temporary lists are removed on exit.
+package_list=$(mktemp)
+trap 'rm -f -- "$package_list"' EXIT
+
+if [[ $source_mode == aur ]]; then
+    printf 'Loading AUR package names...\n' >&2
+    if ! yay -Slqa >"$package_list"; then
+        fail 'Could not load AUR packages. Check your connection and try again.'
+    fi
+    fzf_args+=(
+        --prompt 'AUR > '
+        --preview 'yay -Siia {1}'
+        --preview-label='alt-p: toggle description, alt-b/B: toggle PKGBUILD, alt-j/k: scroll, tab: multi-select'
+        --bind 'alt-b:change-preview:yay -Gpa {1} | tail -n +5'
+        --bind 'alt-B:change-preview:yay -Siia {1}'
+    )
+else
+    if ! pacman -Slq >"$package_list"; then
+        fail 'Could not load repository packages.'
+    fi
+    fzf_args+=(--prompt 'Packages > ' --preview 'pacman -Sii {1}')
+fi
+
+[[ -s $package_list ]] || fail 'No package names were returned.'
+sort -u -o "$package_list" "$package_list"
+
+if selections=$(fzf "${fzf_args[@]}" <"$package_list"); then
+    [[ -n $selections ]] || exit 0
+else
+    picker_status=$?
+    case $picker_status in
+        1|130) exit 0 ;; # No match or user cancellation.
+        *) fail "The package picker failed (exit $picker_status)." ;;
+    esac
+fi
+
+mapfile -t packages <<<"$selections"
+for index in "${!packages[@]}"; do
+    package=${packages[index]}
+    [[ $package != -* && $package =~ ^[A-Za-z0-9@._+-]+$ ]] || fail 'Invalid package selection.'
+    grep -Fxq -- "$package" "$package_list" || fail "Package was not in the source list: $package"
+    if [[ $source_mode == aur ]]; then
+        packages[index]="aur/$package"
+    fi
+done
+
+# Keep the terminal attached for the normal installer and PKGBUILD prompts.
+if [[ $source_mode == aur ]]; then
+    yay -S --needed -- "${packages[@]}"
+elif (( EUID == 0 )); then
+    pacman -S --needed -- "${packages[@]}"
+else
+    sudo pacman -S --needed -- "${packages[@]}"
+fi
