@@ -23,6 +23,8 @@ local browser = "helium-browser"
 
 hl.on("hyprland.start", function()
     hl.exec_cmd("waybar")
+    hl.exec_cmd("gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'")
+    hl.exec_cmd("gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'")
 end)
 
 -- See https://wiki.hypr.land/Configuring/Basics/Autostart/
