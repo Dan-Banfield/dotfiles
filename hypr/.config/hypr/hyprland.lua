@@ -44,6 +44,8 @@ local cursor_size = "20"
 hl.env("HYPRCURSOR_THEME", "macOS-hypr")
 hl.env("HYPRCURSOR_SIZE", cursor_size)
 
+hl.env("XCURSOR_THEME", "macOS")
+hl.env("XCURSOR_SIZE", cursor_size)
 
 -----------------------
 ----- PERMISSIONS -----
