@@ -39,8 +39,10 @@ local browser = "helium-browser"
 
 -- See https://wiki.hypr.land/Configuring/Advanced-and-Cool/Environment-variables/
 
-hl.env("XCURSOR_SIZE", "24")
-hl.env("HYPRCURSOR_SIZE", "24")
+local cursor_size = "20"
+
+hl.env("HYPRCURSOR_THEME", "macOS-hypr")
+hl.env("HYPRCURSOR_SIZE", cursor_size)
 
 
 -----------------------
