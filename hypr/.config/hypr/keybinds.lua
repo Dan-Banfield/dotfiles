@@ -118,6 +118,9 @@ return function(programs)
   bind("SUPER + T", "Terminal", hl.dsp.exec_cmd(programs.terminal))
   bind("SUPER + E", "File manager", hl.dsp.exec_cmd(programs.file_manager))
   bind("SUPER + R", "App launcher", hl.dsp.exec_cmd(programs.launcher))
+  -- Release bindings are shadowed when another Super shortcut is used.
+  bind("SUPER + SUPER_L", "App launcher (tap left Super)", hl.dsp.exec_cmd(programs.launcher), { release = true })
+  bind("SUPER + SUPER_R", "App launcher (tap right Super)", hl.dsp.exec_cmd(programs.launcher), { release = true })
   bind("SUPER + B", "Browser", hl.dsp.exec_cmd(programs.browser))
   bind("SUPER + M", "Log out", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
 

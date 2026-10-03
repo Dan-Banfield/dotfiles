@@ -48,6 +48,7 @@ keycodes, with 0 selecting workspace 10.
 | Super + Alt + mouse wheel | Cycle grouped windows |
 | Super + Ctrl + Z / Alt + Ctrl + Z | Increase / reset cursor zoom |
 | Super + T / Return | Open the configured terminal |
+| Tap Super / Super + R | Open Walker |
 | Super + E / R / M | File manager / launcher / log out |
 
 Native window and workspace shortcuts were migrated from the configuration
@@ -71,8 +72,8 @@ Clone this repository into `~/dotfiles`, then:
 
 ```bash
 cd ~/dotfiles
-stow --simulate --verbose --no-folding --target="$HOME" hypr wallpapers scripts waybar
-stow --verbose --no-folding --target="$HOME" hypr wallpapers scripts waybar
+stow --simulate --verbose --no-folding --target="$HOME" hypr wallpapers scripts waybar walker
+stow --verbose --no-folding --target="$HOME" hypr wallpapers scripts waybar walker
 ```
 
 If the preview reports existing files that conflict, back them up outside this
@@ -92,6 +93,67 @@ Click a pill to activate its workspace through the Wayland workspace protocol,
 supported by the installed Hyprland and Waybar versions. The active pill expands
 with the original 250 ms transition and animated blue gradient. No permanent
 workspace placeholders or custom workspace helpers are used.
+
+## App launcher
+
+The `walker` package supplies the `blue-night` theme and the Walker/Elephant user
+services. The panel uses the bar's navy and blue palette, rounded corners, a blue
+selection gradient, and the existing short Hyprland layer animations.
+
+Install Walker, Elephant, and its app provider together from the AUR:
+
+```bash
+yay -S --needed walker elephant elephant-desktopapplications elephant-providerlist
+```
+
+The theme targets Walker 1.x or newer with the Elephant backend. Only installed
+apps are queried by default, with 12 results and no previews. App icons use GTK's
+native icon lookup. Walker's service stays resident between opens; this avoids
+loading the GTK frontend afresh on every invocation. First-use icon loading and
+actual frame timings still depend on the installed apps, icon theme, and hardware.
+
+After stowing the packages, start the services in your graphical session:
+
+```bash
+"$HOME/.local/bin/launcher-start"
+hyprctl reload
+pkill -USR2 -x waybar
+```
+
+Hyprland starts the services at subsequent logins through `launcher.lua`.
+`launcher-start` imports the current display/session environment into D-Bus and
+systemd before starting the two user services. No separate service-enabling step
+is required. If you use `elephant service enable`, it may try to rewrite the
+Stow-managed unit; use `launcher-start` instead.
+
+The bar, keybindings, and autostart use explicit helper paths, so they also work
+when the graphical session's PATH does not include `~/.local/bin`.
+
+Tap and release either Super key, press Super+R, or click the bar's Apps pill.
+The release bindings use Hyprland's native shortcut shadowing, so the configured
+Super combinations do not also open the launcher. Arrow keys/Tab navigate,
+Enter or a single click launches an app, and Escape closes the panel. The
+`app-launcher` helper connects directly to the resident Walker's documented
+activation socket. If Walker is stopped, it starts both services with the current
+display environment and waits for the socket before opening the panel.
+Passing options to `app-launcher` also uses the normal Walker command.
+
+After changing the launcher configuration or layout, restart it with:
+
+```bash
+"$HOME/.local/bin/launcher-start" --restart
+```
+
+For troubleshooting:
+
+```bash
+systemctl --user status elephant.service walker.service
+journalctl --user -u elephant.service -u walker.service -b
+```
+
+Upstream references: [Walker setup and theming](https://github.com/abenz1267/walker#usage),
+[Elephant installation](https://github.com/abenz1267/elephant#installation), and
+[Hyprland release bindings](https://wiki.hypr.land/Configuring/Basics/Binds/#bind-flags).
 
 ## Package picker
 
@@ -171,7 +233,7 @@ Once a remote repository is configured, update another device with:
 ```bash
 cd ~/dotfiles
 git pull --ff-only
-stow --restow --no-folding --target="$HOME" hypr wallpapers scripts waybar
+stow --restow --no-folding --target="$HOME" hypr wallpapers scripts waybar walker
 ```
 
 Commit or otherwise preserve local edits before pulling.
@@ -192,7 +254,7 @@ committing, especially before publishing the repository.
 
 ```bash
 cd ~/dotfiles
-stow --delete --target="$HOME" hypr wallpapers scripts
+stow --delete --target="$HOME" hypr wallpapers scripts waybar walker
 ```
 
 This removes the managed symlinks; the configuration files remain in the repository.

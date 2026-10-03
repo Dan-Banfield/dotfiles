@@ -1,0 +1,33 @@
+theme = "blue-night"
+close_when_open = true
+click_to_close = true
+single_click_activation = true
+selection_wrap = true
+resume_last_query = false
+hide_quick_activation = true
+hide_action_hints = true
+autoplay_videos = false
+as_window = false
+
+[shell]
+layer = "overlay"
+exclusive_zone = -1
+anchor_top = true
+anchor_bottom = true
+anchor_left = true
+anchor_right = true
+
+[providers]
+default = ["desktopapplications"]
+empty = ["desktopapplications"]
+max_results = 12
+ignore_preview = ["desktopapplications"]
+
+[placeholders]
+default = { input = "Search apps…", list = "No matching apps" }
+desktopapplications = { input = "Search apps…", list = "No matching apps" }
+
+[keybinds]
+close = ["Escape"]
+next = ["Down", "Tab"]
+previous = ["Up", "shift Tab"]

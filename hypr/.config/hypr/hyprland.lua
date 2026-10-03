@@ -7,6 +7,7 @@
 require("displays")
 require("animations")
 require("wallpaper")
+require("launcher")
 
 ---------------------
 ---- MY PROGRAMS ----
@@ -14,7 +15,7 @@ require("wallpaper")
 
 local terminal    = "kitty"
 local fileManager = "nautilus"
-local menu        = "hyprlauncher"
+local menu        = '"$HOME/.local/bin/app-launcher"'
 local browser = "helium-browser"
 
 -------------------
