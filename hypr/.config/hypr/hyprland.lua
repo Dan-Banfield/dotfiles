@@ -13,7 +13,7 @@ require("wallpaper")
 ---------------------
 
 local terminal    = "kitty"
-local fileManager = "dolphin"
+local fileManager = "nautilus"
 local menu        = "hyprlauncher"
 local browser = "helium-browser"
 

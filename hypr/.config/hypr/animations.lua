@@ -1,7 +1,7 @@
 hl.config({ animations = { enabled = true } })
 
 -- 1.0 = normal; 0.8 = quicker; 1.2 = slower.
-local duration_scale = 1
+local duration_scale = 0.8
 
 hl.curve("macOpen", {
   type = "bezier", points = { { 0.16, 1.0 }, { 0.30, 1.0 } },
