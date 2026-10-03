@@ -118,6 +118,7 @@ return function(programs)
   bind("SUPER + T", "Terminal", hl.dsp.exec_cmd(programs.terminal))
   bind("SUPER + E", "File manager", hl.dsp.exec_cmd(programs.file_manager))
   bind("SUPER + R", "App launcher", hl.dsp.exec_cmd(programs.launcher))
+  bind("SUPER + B", "Browser", hl.dsp.exec_cmd(programs.browser))
   bind("SUPER + M", "Log out", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
 
   -- Existing media bindings; requires wpctl, brightnessctl, and playerctl.
