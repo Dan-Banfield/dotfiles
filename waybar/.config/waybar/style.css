@@ -1,0 +1,132 @@
+@define-color pill #0d1423;
+@define-color text #c1d5f0;
+@define-color ink #101c30;
+
+* {
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 11px;
+    font-weight: 600;
+    border: none;
+    border-radius: 0;
+    min-height: 0;
+    padding: 0;
+    text-shadow: none;
+}
+
+window#waybar {
+    background: transparent;
+    color: @text;
+}
+
+#custom-launcher,
+#tray,
+#backlight,
+#pulseaudio,
+#network,
+#battery,
+#mpris,
+#clock {
+    background: @pill;
+    color: @text;
+    border: 1px solid rgba(138, 173, 224, 0.16);
+    border-radius: 999px;
+    min-height: 22px;
+    padding: 0 12px;
+    margin: 6px 0;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+}
+
+#workspaces {
+    background: transparent;
+    margin: 6px 0;
+}
+
+#workspaces button {
+    background: @pill;
+    background-image: none;
+    color: @text;
+    border: 1px solid rgba(138, 173, 224, 0.16);
+    border-radius: 999px;
+    min-width: 12px;
+    min-height: 22px;
+    padding: 0 6px;
+    margin-right: 6px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+    transition: padding 250ms ease, color 250ms ease,
+                background-color 250ms ease;
+}
+
+#workspaces button label {
+    color: inherit;
+}
+
+#workspaces button:hover {
+    background: #1b2d49;
+    color: #e0edff;
+}
+
+#workspaces button.active,
+#mpris,
+#clock {
+    background-color: #8aade0;
+    background-image: linear-gradient(110deg,
+        #517fc4 0%, #8aade0 35%, #b9d5f4 65%, #759dd2 100%);
+    background-size: 300% 100%;
+    background-repeat: no-repeat;
+    color: @ink;
+    border-color: rgba(185, 213, 244, 0.35);
+    animation: blue-drift 18s ease-in-out infinite;
+}
+
+#workspaces button.active {
+    padding: 0 14px;
+}
+
+#mpris {
+    padding: 0 16px;
+}
+
+#clock {
+    padding: 0 16px;
+    font-weight: 700;
+    animation-duration: 24s;
+}
+
+#custom-launcher:hover,
+#backlight:hover,
+#pulseaudio:hover,
+#network:hover,
+#battery:hover {
+    background-color: #1b2d49;
+}
+
+#pulseaudio.muted,
+#network.disconnected {
+    color: #8395af;
+}
+
+#battery.charging {
+    color: #b0d2fa;
+}
+
+#battery.critical:not(.charging) {
+    background: #38202c;
+    color: #f2b5c2;
+}
+
+tooltip {
+    background: #0d1423;
+    border: 1px solid #39485e;
+    border-radius: 12px;
+}
+
+tooltip label {
+    color: @text;
+    padding: 8px;
+}
+
+@keyframes blue-drift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}

@@ -21,6 +21,10 @@ local browser = "helium-browser"
 ---- AUTOSTART ----
 -------------------
 
+hl.on("hyprland.start", function()
+    hl.exec_cmd("waybar")
+end)
+
 -- See https://wiki.hypr.land/Configuring/Basics/Autostart/
 
 -- Autostart necessary processes (like notifications daemons, status bars, etc.)
@@ -72,7 +76,7 @@ hl.env("XCURSOR_SIZE", cursor_size)
 hl.config({
     general = {
         gaps_in  = 5,
-        gaps_out = 20,
+        gaps_out = { top = 6, right = 20, bottom = 20, left = 20 },
 
         border_size = 2,
 

@@ -63,20 +63,31 @@ that depended on Omarchy terminal tags were also omitted.
 
 ## Install
 
-Install Git, GNU Stow, Hyprland, Hyprpaper (0.8 or newer), and the applications
+Install Git, GNU Stow, Hyprland, Hyprpaper (0.8 or newer), Waybar, Python,
+JetBrains Mono Nerd Font, and the applications
 your configuration uses. The wallpaper helper also uses Bash, coreutils,
 util-linux (`flock`), and `file`, normally available on an Arch installation.
 Clone this repository into `~/dotfiles`, then:
 
 ```bash
 cd ~/dotfiles
-stow --simulate --verbose --no-folding --target="$HOME" hypr wallpapers scripts
-stow --verbose --no-folding --target="$HOME" hypr wallpapers scripts
+stow --simulate --verbose --no-folding --target="$HOME" hypr wallpapers scripts waybar
+stow --verbose --no-folding --target="$HOME" hypr wallpapers scripts waybar
 ```
 
 If the preview reports existing files that conflict, back them up outside this
 repository and move them aside before applying. Keep unrelated configuration
 files in place.
+
+## Bar
+
+The `waybar` package supplies the floating blue pill bar. The clock uses
+12-hour time with AM/PM. Scroll over the brightness pill to adjust the display
+backlight with Waybar's native control; no additional brightness helper is needed.
+
+The native `hyprland/workspaces` module shows existing workspaces. The active
+pill expands with the original 250 ms transition and animated blue gradient.
+No permanent workspace placeholders or custom workspace helpers are used.
 
 ## Package picker
 
@@ -156,7 +167,7 @@ Once a remote repository is configured, update another device with:
 ```bash
 cd ~/dotfiles
 git pull --ff-only
-stow --restow --no-folding --target="$HOME" hypr wallpapers scripts
+stow --restow --no-folding --target="$HOME" hypr wallpapers scripts waybar
 ```
 
 Commit or otherwise preserve local edits before pulling.

@@ -1,0 +1,72 @@
+{
+  "layer": "top",
+  "position": "bottom",
+  "height": 36,
+  "spacing": 6,
+  "margin-left": 16,
+  "margin-right": 16,
+  "margin-bottom": 5,
+
+  "modules-left": ["custom/launcher", "hyprland/workspaces"],
+  "modules-center": ["mpris"],
+  "modules-right": ["tray", "backlight", "pulseaudio", "network", "battery", "clock"],
+
+  "custom/launcher": {
+    "format": "Apps",
+    "tooltip": false,
+    "on-click": "hyprlauncher"
+  },
+
+  "hyprland/workspaces": {
+    "format": "{name}",
+    "on-click": "activate"
+  },
+
+  "mpris": {
+    "format": "{dynamic}",
+    "format-paused": "⏸ {dynamic}",
+    "dynamic-order": ["artist", "title"],
+    "dynamic-len": 40,
+    "title-len": 30,
+    "tooltip": true
+  },
+
+  "tray": {
+    "icon-size": 16,
+    "spacing": 8
+  },
+
+  "backlight": {
+    "format": "☀ {percent}%",
+    "scroll-step": 5.0,
+    "min-brightness": 5.0,
+    "tooltip-format": "Brightness: {percent}% · Scroll up/down to adjust"
+  },
+
+  "pulseaudio": {
+    "format": "Vol {volume}%",
+    "format-muted": "Muted",
+    "scroll-step": 5
+  },
+
+  "network": {
+    "format-wifi": "Wi-Fi",
+    "format-ethernet": "LAN",
+    "format-disconnected": "Offline",
+    "tooltip-format-wifi": "{essid} · {signalStrength}%"
+  },
+
+  "battery": {
+    "format": "{capacity}%",
+    "format-charging": "+ {capacity}%",
+    "states": {
+      "warning": 25,
+      "critical": 10
+    }
+  },
+
+  "clock": {
+    "format": "{:%I:%M %p}",
+    "tooltip-format": "{:%A, %d %B %Y}"
+  }
+}
