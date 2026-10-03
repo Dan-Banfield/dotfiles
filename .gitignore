@@ -1,0 +1,11 @@
+# Editor and backup files
+*.swp
+*.swo
+*~
+*.bak
+
+# Environment files can contain credentials.
+.env
+.env.*
+
+.DS_Store
