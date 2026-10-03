@@ -64,7 +64,6 @@ hl.env("XCURSOR_SIZE", cursor_size)
 -- hl.permission("/usr/(lib|libexec|lib64)/xdg-desktop-portal-hyprland", "screencopy", "allow")
 -- hl.permission("/usr/(bin|local/bin)/hyprpm", "plugin", "allow")
 
-
 -----------------------
 ---- LOOK AND FEEL ----
 -----------------------
@@ -160,7 +159,7 @@ hl.config({
 
 hl.config({
     misc = {
-        force_default_wallpaper = -1,    -- Set to 0 or 1 to disable the anime mascot wallpapers
+        force_default_wallpaper = 1,    -- Set to 0 or 1 to disable the anime mascot wallpapers
         disable_hyprland_logo   = true,
     },
 })
@@ -173,15 +172,11 @@ hl.config({
 hl.config({
     input = {
         kb_layout  = "gb",
-        kb_variant = "",
-        kb_model   = "",
-        kb_options = "",
-        kb_rules   = "",
 
         follow_mouse = 1,
         accel_profile = "flat",
 
-        sensitivity = -0.1, -- -1.0 - 1.0, 0 means no modification.
+        sensitivity = 0,
 
         touchpad = {
             natural_scroll = false,
@@ -197,11 +192,6 @@ hl.gesture({
 
 -- Example per-device config
 -- See https://wiki.hypr.land/Configuring/Advanced-and-Cool/Devices/ for more
-hl.device({
-    name        = "epic-mouse-v1",
-    sensitivity = -0.5,
-})
-
 
 ---------------------
 ---- KEYBINDINGS ----
@@ -214,7 +204,6 @@ require("keybinds")({
     launcher     = menu,
     browser		 = browser
 })
-
 
 --------------------------------
 ---- WINDOWS AND WORKSPACES ----
