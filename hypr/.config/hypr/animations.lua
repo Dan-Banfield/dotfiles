@@ -6,7 +6,7 @@ local duration_scale = 0.8
 hl.curve("macOpen", {
   type = "bezier", points = { { 0.16, 1.0 }, { 0.30, 1.0 } },
 })
--- Gentle acceleration instead of an immediate burst of movement.
+
 hl.curve("macWindowOpen", {
   type = "bezier", points = { { 0.30, 0.0 }, { 0.25, 1.0 } },
 })
@@ -23,7 +23,6 @@ hl.curve("macFade", {
   type = "bezier", points = { { 0.25, 0.0 }, { 0.30, 1.0 } },
 })
 
--- Durations below are milliseconds, before applying duration_scale.
 local function animate(leaf, ms, curve, style)
   hl.animation({
     leaf = leaf, enabled = true,
@@ -45,7 +44,6 @@ animate("fadeShadow",  180, "macFade")
 animate("fadeDim",     180, "macFade")
 hl.animation({ leaf = "fadeSwitch", enabled = false })
 
--- Panels and menus: restrained scaling and short fades.
 animate("layers",        220, "macOpen",  "popin 98%")
 animate("layersIn",      220, "macOpen",  "popin 98%")
 animate("layersOut",     140, "macClose", "popin 98%")
@@ -56,8 +54,6 @@ animate("fadePopups",    150, "macFade")
 animate("fadePopupsIn",  150, "macFade")
 animate("fadePopupsOut", 100, "macClose")
 
--- Spaces-style horizontal travel without workspace fading.
--- Set the children explicitly so earlier presets cannot leave fades behind.
 for _, leaf in ipairs({
   "workspaces", "workspacesIn", "workspacesOut",
   "specialWorkspace", "specialWorkspaceIn", "specialWorkspaceOut",

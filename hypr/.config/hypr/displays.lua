@@ -1,6 +1,6 @@
 -- Display layout: https://wiki.hypr.land/configuring/core/monitors/
 
--- Use automatic settings for other connected displays.
+-- Use automatic settings for other connected displays
 hl.monitor({
     output   = "",
     mode     = "preferred",
@@ -8,7 +8,7 @@ hl.monitor({
     scale    = "auto",
 })
 
--- Built-in Laptop Display
+-- Built-in laptop display
 hl.monitor({
     output   = "eDP-1",
     mode     = "1920x1080@60",

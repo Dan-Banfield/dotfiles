@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+    printf 'Usage: wallpaper-set IMAGE | --default | --restore\n'
+    printf 'IMAGE can be a path or a filename in ~/.local/share/wallpapers/.\n'
+}
+
+fail() {
+    printf 'wallpaper-set: %s\n' "$*" >&2
+    exit 1
+}
+
+[[ $# -le 1 ]] || { usage >&2; exit 2; }
+if [[ ${1:-} == --help || ${1:-} == -h ]]; then
+    usage
+    exit 0
+fi
+
+wallpaper_dir="$HOME/.local/share/wallpapers"
+default_image="$wallpaper_dir/default.jpeg"
+state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles"
+selection="$state_dir/wallpaper"
+
+case ${1:---restore} in
+    --restore)
+        image="$default_image"
+        if [[ -L $selection && -f $selection ]]; then
+            image=$(readlink -- "$selection")
+        fi
+        ;;
+    --default)
+        image="$default_image"
+        ;;
+    --*)
+        usage >&2
+        exit 2
+        ;;
+    *)
+        image=$1
+        if [[ ! -f $image && -f $wallpaper_dir/$image ]]; then
+            image="$wallpaper_dir/$image"
+        fi
+        ;;
+esac
+
+[[ -f $image && -r $image ]] || fail "Image not found or unreadable: $image"
+# Keep the installed path instead of resolving Stow's symlink into the repository.
+image=$(realpath --no-symlinks -- "$image")
+[[ $image != *','* && $image != *$'\n'* ]] || fail 'Image paths cannot contain commas or newlines.'
+mime_type=$(file --dereference --brief --mime-type -- "$image")
+[[ $mime_type == image/* ]] || fail "File is not an image: $image"
+
+[[ -n ${XDG_RUNTIME_DIR:-} && -n ${HYPRLAND_INSTANCE_SIGNATURE:-} ]] || fail 'Run this command inside your Hyprland session.'
+command -v hyprpaper >/dev/null || fail 'Install hyprpaper first.'
+command -v hyprctl >/dev/null || fail 'hyprctl is required.'
+
+mkdir -p "$state_dir"
+# The lock is per session. Close its descriptor in the long-running daemon.
+exec 9>"$XDG_RUNTIME_DIR/dotfiles-wallpaper-$HYPRLAND_INSTANCE_SIGNATURE.lock"
+flock -w 10 9 || fail 'Another wallpaper request is still running.'
+
+daemon_ready() {
+    timeout 2 hyprctl hyprpaper listactive >/dev/null 2>&1
+}
+
+if ! daemon_ready; then
+    socket_path="$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.hyprpaper.sock"
+    if [[ ! -S $socket_path ]]; then
+        config_path="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprpaper.conf"
+        [[ -r $config_path ]] || fail "Missing configuration: $config_path"
+        nohup hyprpaper --config "$config_path" >"$state_dir/hyprpaper.log" 2>&1 9>&- </dev/null &
+    fi
+
+    ready=false
+    for ((attempt = 0; attempt < 50; attempt++)); do
+        if daemon_ready; then
+            ready=true
+            break
+        fi
+        sleep 0.1
+    done
+    $ready || fail "Hyprpaper did not become ready. See $state_dir/hyprpaper.log"
+fi
+
+# An empty monitor name updates the fallback shared by all our displays.
+hyprctl hyprpaper wallpaper ",$image,cover" || fail 'Could not apply the wallpaper.'
+
+# Save the choice only after a successful apply, outside the Git repository.
+ln -sfn -- "$image" "$selection"
+printf 'Wallpaper: %s\n' "$image"
