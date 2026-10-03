@@ -24,7 +24,7 @@ window#waybar {
 #pulseaudio,
 #network,
 #battery,
-#mpris,
+#window,
 #clock {
     background: @pill;
     color: @text;
@@ -66,7 +66,7 @@ window#waybar {
 }
 
 #workspaces button.active,
-#mpris,
+#window,
 #clock {
     background-color: #8aade0;
     background-image: linear-gradient(110deg,
@@ -82,7 +82,7 @@ window#waybar {
     padding: 0 14px;
 }
 
-#mpris {
+#window {
     padding: 0 16px;
 }
 

@@ -7,8 +7,8 @@
   "margin-right": 16,
   "margin-bottom": 5,
 
-  "modules-left": ["custom/launcher", "hyprland/workspaces"],
-  "modules-center": ["mpris"],
+  "modules-left": ["custom/launcher", "ext/workspaces"],
+  "modules-center": ["hyprland/window"],
   "modules-right": ["tray", "backlight", "pulseaudio", "network", "battery", "clock"],
 
   "custom/launcher": {
@@ -17,17 +17,16 @@
     "on-click": "hyprlauncher"
   },
 
-  "hyprland/workspaces": {
+  "ext/workspaces": {
     "format": "{name}",
+    "sort-by-name": true,
     "on-click": "activate"
   },
 
-  "mpris": {
-    "format": "{dynamic}",
-    "format-paused": "⏸ {dynamic}",
-    "dynamic-order": ["artist", "title"],
-    "dynamic-len": 40,
-    "title-len": 30,
+  "hyprland/window": {
+    "format": "{title}",
+    "max-length": 50,
+    "icon": false,
     "tooltip": true
   },
 
