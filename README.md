@@ -11,9 +11,55 @@ paths relative to your home directory:
 hypr/.config/hypr/hyprland.lua -> ~/.config/hypr/hyprland.lua
 ```
 
-The initial package contains the existing Hyprland Lua configuration. Application
-and dependency installation is currently manual. Use a Hyprland version that
-supports this configuration format.
+The Hyprland package uses Lua configuration. `hyprland.lua` loads `keybinds.lua`,
+which contains all shortcuts. Application and dependency installation is manual.
+Use a Hyprland version that supports this configuration format.
+
+## Hyprland shortcuts
+
+`Super` is the Windows key. Workspace number shortcuts use physical number-row
+keycodes, with 0 selecting workspace 10.
+
+| Shortcut | Action |
+| --- | --- |
+| Super + Q / W | Close the focused window |
+| Super + arrows | Focus a window |
+| Super + Alt + arrows | Move a window |
+| Super + Shift + arrows | Swap windows |
+| Super + 1–0 | Switch workspace |
+| Super + Shift + 1–0 | Move window and follow |
+| Super + Alt + 1–0 | Move window without following |
+| Super + Alt + Shift + 1–0 | Alternate silent move shortcut |
+| Super + Tab / Shift + Tab / Ctrl + Tab | Next / previous / former workspace |
+| Super + S / Alt + S | Show scratchpad / send window to scratchpad |
+| Super + Alt + Shift + arrows | Move workspace to another monitor |
+| Alt + Tab / Shift + Tab | Cycle windows and raise the focused window |
+| Ctrl + Alt + Tab / Shift + Tab | Cycle monitors |
+| Super + F / Alt + F | Fullscreen / maximize |
+| Super + V / J / P | Toggle floating / split / pseudo tiling |
+| Super + - / = | Resize horizontally by 100 pixels |
+| Super + Shift + - / = | Resize vertically by 100 pixels |
+| Add Alt / Ctrl to resize shortcuts | Use 25 / 300 pixel increments |
+| Super + left / right mouse drag | Move / resize window |
+| Super + mouse wheel | Cycle workspaces |
+| Super + G / Alt + G | Toggle grouping / remove window from group |
+| Super + Alt + Tab / Alt + Shift + Tab | Cycle grouped windows |
+| Super + Ctrl + left / right | Cycle grouped windows |
+| Super + Alt + mouse wheel | Cycle grouped windows |
+| Super + Ctrl + Z / Alt + Ctrl + Z | Increase / reset cursor zoom |
+| Super + T / Return | Open the configured terminal |
+| Super + E / R / M | File manager / launcher / log out |
+
+Native window and workspace shortcuts were migrated from the configuration
+backup with personal overrides applied. Alt+number is reserved for silent
+workspace moves, replacing the old group-index bindings. Terminal launch uses
+Super+T rather than the starter config's Super+Q, which now closes windows.
+Media shortcuts retain the current commands and require `wpctl`,
+`brightnessctl`, and `playerctl`. App commands remain in `hyprland.lua`.
+
+Menu, screenshot, theme, panel, application, and window-management shortcuts
+that required Omarchy scripts were not imported. Universal clipboard shortcuts
+that depended on Omarchy terminal tags were also omitted.
 
 ## Install
 
