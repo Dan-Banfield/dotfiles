@@ -84,6 +84,17 @@ window#waybar {
 
 #window {
     padding: 0 16px;
+    opacity: 1;
+    transition: opacity 180ms ease-out,
+                padding 240ms cubic-bezier(0.16, 1, 0.3, 1),
+                min-height 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Keep the widget present so GTK can animate both entering and leaving. */
+window#waybar.empty #window {
+    opacity: 0;
+    padding: 0;
+    min-height: 0;
 }
 
 #clock {

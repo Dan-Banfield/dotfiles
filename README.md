@@ -84,8 +84,10 @@ files in place.
 
 The `waybar` package supplies the floating blue pill bar. The clock uses
 12-hour time with AM/PM. The centre pill shows the focused window's title,
-truncated to 50 characters with the full title available on hover. Scroll over
-the brightness pill to adjust the display backlight with Waybar's native control;
+truncated to 50 characters with the full title available on hover. It fades and
+contracts on empty workspaces, then fades and expands when a window is present,
+using Waybar's native empty-workspace CSS class. Scroll over the brightness pill
+to adjust the display backlight with Waybar's native control;
 no additional brightness helper is needed.
 
 The native `ext/workspaces` module shows existing workspaces in numeric order.
