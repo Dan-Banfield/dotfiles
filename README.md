@@ -112,6 +112,18 @@ native icon lookup. Walker's service stays resident between opens; this avoids
 loading the GTK frontend afresh on every invocation. First-use icon loading and
 actual frame timings still depend on the installed apps, icon theme, and hardware.
 
+The app list is configured in
+`walker/.config/elephant/desktopapplications.toml`. It hides Avahi's browsers,
+the advanced network editor, and hardware diagnostic/test utilities, and prefers
+apps you have used when the search is empty. To hide another entry, add its
+desktop filename without `.desktop` to the blacklist regexes and restart the
+launcher services. Other installed apps remain discoverable automatically.
+
+The user desktop entry in
+`walker/.local/share/applications/code-oss.desktop` overrides the packaged name
+with **Visual Studio Code (OSS)**. It preserves the `code-oss` command and icon;
+searching `code`, `vscode`, or `vs code` also selects it through Elephant aliases.
+
 After stowing the packages, start the services in your graphical session:
 
 ```bash

@@ -1,0 +1,13 @@
+history_when_empty = true
+
+blacklist = [
+  # Network discovery and advanced connection configuration.
+  "^(avahi-discover|bssh|bvnc|nm-connection-editor)$",
+  # Hardware topology, video test tools, and GPS diagnostics.
+  "^(lstopo|qv4l2|qvidcap|xgps|xgpsspeed)$",
+]
+
+[aliases]
+code = "code-oss.desktop"
+vscode = "code-oss.desktop"
+"vs code" = "code-oss.desktop"
