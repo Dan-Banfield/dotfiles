@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Toggle Laptop Display
+Comment=Turn the built-in screen off or on when using an external display
+Exec=hyprctl eval "require('displays').toggle_laptop()"
+TryExec=hyprctl
+Icon=video-display
+Terminal=false
+StartupNotify=false
+Categories=Settings;HardwareSettings;
+Keywords=laptop;display;screen;monitor;HDMI;external;toggle;

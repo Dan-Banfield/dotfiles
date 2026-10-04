@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Install Package AUR
+Comment=Browse and install AUR packages with the fzf picker
+Exec=kitty --class package-installer-aur --title "Install Package AUR" sh -c "exec ~/.local/bin/pkg-install --aur"
+TryExec=kitty
+Icon=system-software-install
+Terminal=false
+StartupNotify=false
+Categories=Settings;PackageManager;
+Keywords=install;package;AUR;yay;fzf;

@@ -171,6 +171,20 @@ The user desktop entry in
 with **Visual Studio Code (OSS)**. It preserves the `code-oss` command and icon;
 searching `code`, `vscode`, or `vs code` also selects it through Elephant aliases.
 
+The launcher also includes **Install Package**, **Install Package AUR**, and
+**Toggle Laptop Display**. The installers open the existing fzf package picker
+in Kitty, with the usual pacman or yay confirmation prompts. Search `install`,
+`aur`, or `laptop` to find them. Their desktop entries use the current user's
+home directory, so they work after stowing the repository on another machine.
+
+The display toggle disables `eDP-1` only while an active HDMI or DisplayPort
+screen is available, moving its windows and workspaces to the external screen.
+Select it again to restore the laptop screen using the rule in `displays.lua`.
+Unplugging the last external screen restores it automatically. The toggle lasts
+until it is reversed, the configuration is reloaded, or the session ends;
+it does not save a disabled-screen setting to disk. Edit the `laptop` rule in
+`hypr/.config/hypr/displays.lua` for a different built-in display.
+
 After stowing the packages, start the services in your graphical session:
 
 ```bash

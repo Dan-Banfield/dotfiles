@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Install Package
+Comment=Browse and install official Arch packages with the fzf picker
+Exec=kitty --class package-installer --title "Install Package" sh -c "exec ~/.local/bin/pkg-install --repo"
+TryExec=kitty
+Icon=system-software-install
+Terminal=false
+StartupNotify=false
+Categories=Settings;PackageManager;
+Keywords=install;package;pacman;repo;fzf;
