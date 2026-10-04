@@ -8,7 +8,7 @@
   "margin-bottom": 5,
 
   "modules-left": ["custom/launcher", "ext/workspaces"],
-  "modules-center": ["hyprland/window"],
+  "modules-center": ["hyprland/window", "cffi/window-title"],
   "modules-right": ["tray", "backlight", "pulseaudio", "network", "battery", "clock"],
 
   "custom/launcher": {
@@ -28,6 +28,10 @@
     "max-length": 50,
     "icon": false,
     "tooltip": true
+  },
+
+  "cffi/window-title": {
+    "module_path": ".local/lib/dotfiles/waybar/window-title.so"
   },
 
   "tray": {

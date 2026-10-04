@@ -84,11 +84,21 @@ files in place.
 
 The `waybar` package supplies the floating blue pill bar. The clock uses
 12-hour time with AM/PM. The centre pill shows the focused window's title,
-truncated to 50 characters with the full title available on hover. It fades and
-contracts on empty workspaces, then fades and expands when a window is present,
-using Waybar's native empty-workspace CSS class. Scroll over the brightness pill
-to adjust the display backlight with Waybar's native control;
+truncated to 50 characters with the full title available on hover. Title changes
+crossfade over 220 ms while the pill smoothly resizes. It fades and contracts on
+empty workspaces, then fades and expands when a window is present. Scroll over
+the brightness pill to adjust the display backlight with Waybar's native control;
 no additional brightness helper is needed.
+
+Start the bar with `~/.local/bin/waybar-start` (also used by Hyprland autostart).
+It builds `waybar/.config/waybar/cffi/window-title.c` once and rebuilds when the
+source changes, using `gcc`, `pkgconf`, and `gtk3`. The compiled library stays
+outside the repository at `~/.local/lib/dotfiles/waybar/window-title.so`, so each
+machine builds its own copy. To only build it, use `waybar-start --build-only`.
+The widget reuses the native `hyprland/window` module's updates, with no polling
+or additional Hyprland IPC. GTK Stack provides the text crossfade and width
+interpolation; GTK Revealer and CSS handle hiding and showing the entire pill.
+If the extension cannot load, the standard title module remains available.
 
 The native `ext/workspaces` module shows existing workspaces in numeric order.
 Click a pill to activate its workspace through the Wayland workspace protocol,

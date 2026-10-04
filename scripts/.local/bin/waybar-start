@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+"""Build the native title widget when needed, then run the Stow-managed bar."""
+
+import os
+from pathlib import Path
+import shlex
+import subprocess
+import sys
+import tempfile
+
+
+def build(config_dir, library):
+    source = config_dir / "cffi/window-title.c"
+    if library.exists() and library.stat().st_mtime_ns >= source.stat().st_mtime_ns:
+        return
+    flags = shlex.split(subprocess.check_output(
+        ["pkg-config", "--cflags", "--libs", "gtk+-3.0"], text=True,
+    ))
+    library.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary = tempfile.mkstemp(prefix=".window-title-", suffix=".so", dir=library.parent)
+    os.close(fd)
+    try:
+        subprocess.run([
+            *shlex.split(os.environ.get("CC", "cc")), "-O2", "-Wall", "-Wextra",
+            "-Werror", "-shared", "-fPIC", str(source), "-o", temporary, *flags,
+        ], check=True)
+        os.chmod(temporary, 0o755)
+        os.replace(temporary, library)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+
+
+def main():
+    home = Path.home()
+    config_dir = Path(os.environ.get("XDG_CONFIG_HOME", str(home / ".config"))) / "waybar"
+    library = home / ".local/lib/dotfiles/waybar/window-title.so"
+    try:
+        build(config_dir, library)
+    except (OSError, subprocess.CalledProcessError) as error:
+        print(f"waybar-start: title widget build failed: {error}", file=sys.stderr)
+        print("Install gcc, pkgconf, and gtk3 to build it.", file=sys.stderr)
+        if sys.argv[1:] == ["--build-only"]:
+            return 1
+        # If the extension cannot load, Waybar retains its native title module.
+    if sys.argv[1:] == ["--build-only"]:
+        return 0
+    # Waybar's CFFI module_path is literal; resolve its portable path from HOME.
+    os.chdir(home)
+    os.execvp("waybar", ["waybar", "-c", str(config_dir / "config.jsonc"),
+                          "-s", str(config_dir / "style.css"), *sys.argv[1:]])
+
+
+if __name__ == "__main__":
+    sys.exit(main())
