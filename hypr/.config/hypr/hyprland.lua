@@ -8,6 +8,7 @@ require("displays")
 require("animations")
 require("wallpaper")
 require("launcher")
+require("session")
 
 ---------------------
 ---- MY PROGRAMS ----

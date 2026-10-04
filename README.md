@@ -49,6 +49,7 @@ keycodes, with 0 selecting workspace 10.
 | Super + Ctrl + Z / Alt + Ctrl + Z | Increase / reset cursor zoom |
 | Super + T / Return | Open the configured terminal |
 | Tap Super / Super + R | Open Walker |
+| Ctrl + Alt + Delete | Open the session menu |
 | Super + E / R / M | File manager / launcher / log out |
 
 Native window and workspace shortcuts were migrated from the configuration
@@ -72,8 +73,8 @@ Clone this repository into `~/dotfiles`, then:
 
 ```bash
 cd ~/dotfiles
-stow --simulate --verbose --no-folding --target="$HOME" hypr wallpapers scripts waybar walker
-stow --verbose --no-folding --target="$HOME" hypr wallpapers scripts waybar walker
+stow --simulate --verbose --no-folding --target="$HOME" hypr wallpapers scripts waybar walker session-menu
+stow --verbose --no-folding --target="$HOME" hypr wallpapers scripts waybar walker session-menu
 ```
 
 If the preview reports existing files that conflict, back them up outside this
@@ -105,6 +106,40 @@ Click a pill to activate its workspace through the Wayland workspace protocol,
 supported by the installed Hyprland and Waybar versions. The active pill expands
 with the original 250 ms transition and animated blue gradient. No permanent
 workspace placeholders or custom workspace helpers are used.
+
+## Session menu
+
+Press **Ctrl+Alt+Delete** for a dark blue menu with Lock, Sleep, Processes,
+Log Out, Restart, and Power Off. The panel slides and fades in, cards appear in a
+short stagger, and confirmation pages crossfade. Select with the mouse or keys
+1–6; Tab/arrows move focus. Escape and clicking outside close it. Log Out,
+Restart, and Power Off open a confirmation page with Go Back focused first.
+
+The `session-menu` Stow package contains the GTK4 app and editable CSS.
+It uses `python-gobject`, `gtk4`, and `gtk4-layer-shell`, already required by the
+installed launcher. Hyprland warms it at login; `~/.local/bin/session-menu`
+activates the resident app through D-Bus, with a normal startup fallback.
+Logout uses `uwsm stop` in a managed session and the native Hyprland exit otherwise.
+Processes opens `htop` in Kitty. Sleep uses the system suspend action.
+
+After stowing the new package, reload the shortcut and open the menu:
+
+```bash
+hyprctl reload
+~/.local/bin/session-menu
+```
+
+Lock is disabled until `hyprlock` is installed. A matching configuration is
+provided at `hypr/.config/hypr/hyprlock.conf`, with the shared wallpaper, blue
+password field, and 12-hour clock. To enable it on Arch:
+
+```bash
+sudo pacman -S --needed hyprlock
+```
+
+After editing the menu's Python or CSS, run `~/.local/bin/session-menu --quit`
+and open it again. `~/.local/bin/session-menu --check` validates its dependencies
+and stylesheet without opening the menu or executing any session action.
 
 ## App launcher
 
@@ -257,7 +292,7 @@ Once a remote repository is configured, update another device with:
 ```bash
 cd ~/dotfiles
 git pull --ff-only
-stow --restow --no-folding --target="$HOME" hypr wallpapers scripts waybar walker
+stow --restow --no-folding --target="$HOME" hypr wallpapers scripts waybar walker session-menu
 ```
 
 Commit or otherwise preserve local edits before pulling.
@@ -278,7 +313,7 @@ committing, especially before publishing the repository.
 
 ```bash
 cd ~/dotfiles
-stow --delete --target="$HOME" hypr wallpapers scripts waybar walker
+stow --delete --target="$HOME" hypr wallpapers scripts waybar walker session-menu
 ```
 
 This removes the managed symlinks; the configuration files remain in the repository.
