@@ -205,6 +205,29 @@ Type your normal login password and press Enter to unlock. The theme keeps
 Hyprlock's default PAM authentication, and both shortcuts use zero grace time.
 Hyprlock reads the theme each time it starts, so edits apply on the next lock.
 
+Hypridle locks the session before system suspend, including lid closure and
+the session menu's Sleep action. Its Stow-managed configuration is
+`hypr/.config/hypr/hypridle.conf`. `inhibit_sleep = 3` delays suspend until
+Hyprland confirms the screen is locked; the existing Hyprlock theme and zero
+grace time apply. No idle timeouts are configured, and systemd-logind continues
+to control lid actions (including its existing behaviour when docked).
+
+Install Hypridle and start it once in your current desktop session:
+
+```bash
+sudo pacman -S --needed hypridle
+nohup hypridle > ~/.cache/hypridle.log 2>&1 &
+```
+
+Hyprland starts it automatically on subsequent logins. Use this autostart
+entry without also enabling `hypridle.service`, to avoid running two copies.
+To apply later changes to `hypridle.conf`, restart Hypridle:
+
+```bash
+pkill -x hypridle
+nohup hypridle > ~/.cache/hypridle.log 2>&1 &
+```
+
 ## App launcher
 
 The `walker` package supplies the `blue-night` theme and the Walker/Elephant user
