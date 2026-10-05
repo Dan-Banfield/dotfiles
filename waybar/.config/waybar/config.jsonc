@@ -9,7 +9,7 @@
 
   "modules-left": ["custom/launcher", "ext/workspaces"],
   "modules-center": ["hyprland/window", "cffi/window-title"],
-  "modules-right": ["tray", "backlight", "pulseaudio", "network", "battery", "clock"],
+  "modules-right": ["tray", "custom/power-profile", "backlight", "pulseaudio", "network", "battery", "clock"],
 
   "custom/launcher": {
     "format": "Apps",
@@ -37,6 +37,22 @@
   "tray": {
     "icon-size": 16,
     "spacing": 8
+  },
+
+  "custom/power-profile": {
+    "exec": "\"$HOME/.local/bin/power-profile\"",
+    "return-type": "json",
+    "format": "{text}",
+    "escape": true,
+    "restart-interval": 10,
+    "exec-on-event": false,
+    "menu": "on-click",
+    "menu-file": "~/.config/waybar/power-profiles.xml",
+    "menu-actions": {
+      "power-saver": "\"$HOME/.local/bin/power-profile\" --set power-saver",
+      "balanced": "\"$HOME/.local/bin/power-profile\" --set balanced",
+      "performance": "\"$HOME/.local/bin/power-profile\" --set performance"
+    }
   },
 
   "backlight": {

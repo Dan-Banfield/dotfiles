@@ -121,6 +121,19 @@ empty workspaces, then fades and expands when a window is present. Scroll over
 the brightness pill to adjust the display backlight with Waybar's native control;
 no additional brightness helper is needed.
 
+The power-profile pill beside brightness shows the current mode. Click it and
+choose **Power Saver**, **Balanced**, or **Performance** from the blue menu.
+It uses `power-profiles-daemon`, `python-gobject`, and `libnotify`; install those
+on another Arch device with `sudo pacman -S --needed power-profiles-daemon python-gobject libnotify`.
+The service starts through D-Bus when needed. Performance availability depends
+on the device's hardware. The `power-profile` helper listens for D-Bus property
+changes, so the pill updates immediately without polling and also follows
+changes made elsewhere. Selection errors appear as desktop notifications.
+The daemon preserves the selected profile across restarts.
+
+After changing the bar configuration, run `pkill -USR2 -x waybar` in your desktop
+terminal to reload it.
+
 Start the bar with `~/.local/bin/waybar-start` (also used by Hyprland autostart).
 It builds `waybar/.config/waybar/cffi/window-title.c` once and rebuilds when the
 source changes, using `gcc`, `pkgconf`, and `gtk3`. The compiled library stays

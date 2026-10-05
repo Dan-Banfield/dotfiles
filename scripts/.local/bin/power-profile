@@ -1,0 +1,86 @@
+#!/usr/bin/env python3
+"""Watch power-profiles-daemon for Waybar, or select a profile explicitly."""
+
+import argparse
+import json
+import subprocess
+import sys
+
+from gi.repository import Gio, GLib
+
+BUS_NAME = "org.freedesktop.UPower.PowerProfiles"
+OBJECT_PATH = "/org/freedesktop/UPower/PowerProfiles"
+PROFILES = {
+    "power-saver": ("  Saver", "Power Saver", "Prioritise battery life and quieter operation."),
+    "balanced": ("  Balanced", "Balanced", "Balance responsiveness and energy use."),
+    "performance": ("  Performance", "Performance", "Prioritise performance; uses more power."),
+}
+
+
+def select(profile):
+    result = subprocess.run(
+        ["powerprofilesctl", "set", profile], capture_output=True, text=True, check=False
+    )
+    if result.returncode:
+        message = result.stderr.strip() or "The profile could not be selected."
+        print(message, file=sys.stderr)
+        subprocess.run(
+            ["notify-send", "--app-name=Power profiles", "--urgency=normal",
+             "Power profile unavailable", GLib.markup_escape_text(message)],
+            check=False,
+        )
+    return result.returncode
+
+
+def watch():
+    last_output = None
+
+    def emit(proxy=None, *_args):
+        nonlocal last_output
+        active = proxy.get_cached_property("ActiveProfile") if proxy else None
+        profile = active.unpack() if active and proxy.get_name_owner() else None
+        if profile in PROFILES:
+            text, name, description = PROFILES[profile]
+            tooltip = f"{name}\n{description}\nClick to choose a power profile."
+            degraded = proxy.get_cached_property("PerformanceDegraded")
+            if profile == "performance" and degraded and degraded.unpack():
+                tooltip += f"\nPerformance limited: {degraded.unpack()}"
+            output = {"text": text, "class": profile, "tooltip": tooltip}
+        else:
+            output = {"text": "Power", "class": "unavailable",
+                      "tooltip": "Power-profile service unavailable."}
+        encoded = json.dumps(output, ensure_ascii=False)
+        if encoded != last_output:
+            print(encoded, flush=True)
+            last_output = encoded
+
+    try:
+        proxy = Gio.DBusProxy.new_for_bus_sync(
+            Gio.BusType.SYSTEM, Gio.DBusProxyFlags.NONE, None,
+            BUS_NAME, OBJECT_PATH, BUS_NAME, None,
+        )
+    except GLib.Error as error:
+        emit()
+        print(f"Power-profile service: {error.message}", file=sys.stderr)
+        return 1
+
+    proxy.connect("g-properties-changed", emit)
+    proxy.connect("notify::g-name-owner", emit)
+    emit(proxy)
+    GLib.MainLoop().run()
+    return 0
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--set", choices=PROFILES, dest="profile")
+    args = parser.parse_args()
+    return select(args.profile) if args.profile else watch()
+
+
+if __name__ == "__main__":
+    try:
+        sys.exit(main())
+    except BrokenPipeError:
+        # Waybar has closed its output pipe during shutdown/reload.
+        sys.exit(0)
