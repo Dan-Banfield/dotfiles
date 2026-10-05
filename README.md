@@ -209,8 +209,11 @@ Hypridle locks the session before system suspend, including lid closure and
 the session menu's Sleep action. Its Stow-managed configuration is
 `hypr/.config/hypr/hypridle.conf`. `inhibit_sleep = 3` delays suspend until
 Hyprland confirms the screen is locked; the existing Hyprlock theme and zero
-grace time apply. No idle timeouts are configured, and systemd-logind continues
-to control lid actions (including its existing behaviour when docked).
+grace time apply. After **60 seconds without interaction**, Hypridle requests
+suspend, unless an application, systemd, or Wayland idle inhibitor is active.
+It honours sleep inhibitors too: the suspend command does not bypass them.
+Systemd-logind continues to control lid actions (including its existing
+behaviour when docked).
 
 Install Hypridle and start it once in your current desktop session:
 
@@ -229,6 +232,11 @@ nohup hypridle > ~/.cache/hypridle.log 2>&1 &
 ```
 
 ## App launcher
+
+The **Codex** entry opens the installed `codex` command in Kitty, starting in
+your home directory. Its white Codex SVG icon is restored from the Omarchy
+archive and bundled under `walker/.local/share/icons/hicolor/scalable/apps/`.
+Keep `codex` on your `PATH` on other devices; the dotfiles do not install Codex.
 
 The `walker` package supplies the `blue-night` theme and the Walker/Elephant user
 services. The panel uses the bar's navy and blue palette, rounded corners, a blue

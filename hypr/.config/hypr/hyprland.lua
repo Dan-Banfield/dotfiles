@@ -82,7 +82,8 @@ hl.env("XCURSOR_SIZE", cursor_size)
 hl.config({
     general = {
         gaps_in  = 5,
-        gaps_out = { top = 6, right = 20, bottom = 20, left = 20 },
+        -- Match the bottom window gap (20px) plus the pills' top margin (6px).
+        gaps_out = { top = 26, right = 20, bottom = 20, left = 20 },
 
         border_size = 2,
 
