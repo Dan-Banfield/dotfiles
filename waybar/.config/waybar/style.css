@@ -69,8 +69,6 @@ window#waybar {
 
 #workspaces button.active,
 #custom-power-profile.performance,
-#window,
-#window-title,
 #clock {
     background-color: #8aade0;
     background-image: linear-gradient(110deg,
