@@ -1,0 +1,22 @@
+#!/bin/sh
+# Desktop launchers do not read the interactive shell's PATH configuration.
+export PATH="$HOME/.local/bin:$PATH"
+cd "$HOME" || exit 1
+
+if command -v codex >/dev/null 2>&1; then
+    codex "$@"
+    status=$?
+else
+    printf 'Codex could not be found. Install Codex or add it to PATH.\n' >&2
+    status=127
+fi
+
+# Keep failures readable, while allowing a normal Codex exit to close Kitty.
+if [ "$status" -ne 0 ]; then
+    printf '\nCodex exited with status %s.\n' "$status" >&2
+    if [ -t 0 ]; then
+        printf 'Press Enter to close this window.\n' >&2
+        IFS= read -r reply
+    fi
+fi
+exit "$status"

@@ -33,8 +33,10 @@ Canvas {
             ctx.moveTo(17.7, 6.3);
             ctx.arc(12, 12, 8, -Math.PI / 4, 5 * Math.PI / 4);
         } else if (kind === "restart") {
-            ctx.arc(12, 12, 8, -Math.PI / 2, Math.PI);
-            ctx.moveTo(4, 6); ctx.lineTo(4, 12); ctx.lineTo(10, 12);
+            // Clockwise curve ending at the arrowhead in the upper right.
+            ctx.moveTo(18.9, 16);
+            ctx.arc(12, 12, 8, Math.PI / 6, 11 * Math.PI / 6);
+            ctx.moveTo(18.9, 2); ctx.lineTo(18.9, 8); ctx.lineTo(12.9, 8);
         } else if (kind === "sleep") {
             ctx.moveTo(18, 17);
             ctx.bezierCurveTo(5, 21, 1, 8, 10, 4);

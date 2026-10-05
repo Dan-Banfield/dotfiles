@@ -2,7 +2,7 @@
 Type=Application
 Name=Codex
 Comment=Open the Codex coding assistant in Kitty
-Exec=kitty --class codex --title Codex sh -c "cd ~ && exec codex"
+Exec=kitty --class codex --title Codex sh -c "exec ~/.local/bin/codex-launch"
 TryExec=kitty
 Icon=codex
 Terminal=false

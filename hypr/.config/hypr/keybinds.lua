@@ -15,6 +15,9 @@ bind("SUPER + Q", "Close window", hl.dsp.window.close())
 bind("SUPER + W", "Close window", hl.dsp.window.close())
 bind("SUPER + V", "Toggle window floating/tiling", hl.dsp.window.float({ action = "toggle" }))
 
+-- Screenshot
+bind("SUPER + SHIFT + S", "Screenshot region", hl.dsp.exec_cmd('hyprshot -m region --clipboard-only'))
+
 bind("SUPER + J", "Toggle window split", hl.dsp.layout("togglesplit"))
 bind("SUPER + P", "Pseudo window", hl.dsp.window.pseudo())
 bind("SUPER + F", "Full screen", hl.dsp.window.fullscreen({ mode = "fullscreen" }))

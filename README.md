@@ -276,7 +276,10 @@ home-directory packages. See [sddm/README.md](sddm/README.md) for details.
 The **Codex** entry opens the installed `codex` command in Kitty, starting in
 your home directory. Its white Codex SVG icon is restored from the Omarchy
 archive and bundled under `walker/.local/share/icons/hicolor/scalable/apps/`.
-Keep `codex` on your `PATH` on other devices; the dotfiles do not install Codex.
+The launcher includes `~/.local/bin` in its search path even outside an
+interactive shell, and keeps startup errors visible until you press Enter.
+On other devices, install Codex in `~/.local/bin` or elsewhere on `PATH`;
+the dotfiles do not install Codex.
 
 The `walker` package supplies the `blue-night` theme and the Walker/Elephant user
 services. The panel uses the bar's navy and blue palette, rounded corners, a blue
