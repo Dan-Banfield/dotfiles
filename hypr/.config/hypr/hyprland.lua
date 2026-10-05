@@ -27,6 +27,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd('"$HOME/.local/bin/waybar-start"')
     hl.exec_cmd("gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'")
     hl.exec_cmd("gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'")
+    hl.exec_cmd("gsettings set org.gnome.desktop.interface icon-theme 'Prism-Charcoal'")
 end)
 
 -- See https://wiki.hypr.land/Configuring/Basics/Autostart/
@@ -187,7 +188,7 @@ hl.config({
         sensitivity = 0,
 
         touchpad = {
-            natural_scroll = false,
+            natural_scroll = true,
         },
     },
 })

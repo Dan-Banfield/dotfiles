@@ -50,6 +50,7 @@ keycodes, with 0 selecting workspace 10.
 | Super + T / Return | Open the configured terminal |
 | Tap Super / Super + R | Open Walker |
 | Ctrl + Alt + Delete | Open the session menu |
+| Super + L | Lock the screen with Hyprlock |
 | Super + E / R / M | File manager / launcher / log out |
 
 Native window and workspace shortcuts were migrated from the configuration
@@ -73,13 +74,42 @@ Clone this repository into `~/dotfiles`, then:
 
 ```bash
 cd ~/dotfiles
-stow --simulate --verbose --no-folding --target="$HOME" hypr wallpapers scripts waybar walker session-menu
-stow --verbose --no-folding --target="$HOME" hypr wallpapers scripts waybar walker session-menu
+stow --simulate --verbose --no-folding --target="$HOME" hypr wallpapers scripts waybar walker session-menu icons
+stow --verbose --no-folding --target="$HOME" hypr wallpapers scripts waybar walker session-menu icons
 ```
 
 If the preview reports existing files that conflict, back them up outside this
 repository and move them aside before applying. Keep unrelated configuration
 files in place.
+
+## Folder icons
+
+The `icons` package restores the original **Prism-Charcoal** folder theme from
+the Omarchy migration archive, with 20 SVG icons for folders, home, desktop,
+Documents, Downloads, Music, Pictures, Videos, and related locations. The artwork
+and `index.theme` are copied unchanged. The folder colours are `#283547`,
+`#39485E`, and `#465971`, with `#A7B0BE` detail lines.
+
+The theme installs at `~/.local/share/icons/Prism-Charcoal`. Its original fallback
+chain is Yaru-blue-dark, Yaru-dark, Adwaita, then hicolor; Adwaita is available on
+this installation, so the custom folders do not require Yaru. Keep
+`adwaita-icon-theme` installed on other Arch devices as well.
+
+GTK 3 and GTK 4 settings select the theme, and Hyprland sets the desktop icon
+preference at login. Apply it to the current session with:
+
+```bash
+gsettings set org.gnome.desktop.interface icon-theme 'Prism-Charcoal'
+```
+
+If an already-open file manager keeps the old icons, close and reopen it.
+The optional icon cache can be rebuilt with:
+
+```bash
+gtk-update-icon-cache -f -t "$HOME/.local/share/icons/Prism-Charcoal"
+```
+
+Cache files stay outside Git; the SVGs and theme selection are Stow-managed.
 
 ## Bar
 
@@ -129,17 +159,38 @@ hyprctl reload
 ~/.local/bin/session-menu
 ```
 
-Lock is disabled until `hyprlock` is installed. A matching configuration is
-provided at `hypr/.config/hypr/hyprlock.conf`, with the shared wallpaper, blue
-password field, and 12-hour clock. To enable it on Arch:
+The Lock button becomes available when `hyprlock` is installed; reopening the
+menu refreshes its availability. See the lock screen setup below.
+
+After editing the menu's Python or CSS, run `~/.local/bin/session-menu --quit`
+and open it again. `~/.local/bin/session-menu --check` validates its dependencies
+and stylesheet without opening the menu or executing any session action.
+
+## Lock screen
+
+Install Hyprlock from Arch's official repositories:
 
 ```bash
 sudo pacman -S --needed hyprlock
 ```
 
-After editing the menu's Python or CSS, run `~/.local/bin/session-menu --quit`
-and open it again. `~/.local/bin/session-menu --check` validates its dependencies
-and stylesheet without opening the menu or executing any session action.
+The Stow-managed theme is `hypr/.config/hypr/hyprlock.conf`. It uses the bundled
+wallpaper with a soft blur, a rounded translucent navy card, a small lock badge,
+a large 12-hour clock, the date and username, and a blue-gradient password pill.
+The outline turns pale gold for Caps Lock and rose on an authentication failure.
+Native fades and password-field animations use short easing curves. The date
+updates once per minute; the background and card use native Hyprlock widgets.
+
+Run `hyprctl reload` to load **Super+L**, or choose **Lock** in the
+**Ctrl+Alt+Delete** menu. To lock directly:
+
+```bash
+hyprlock --grace 0
+```
+
+Type your normal login password and press Enter to unlock. The theme keeps
+Hyprlock's default PAM authentication, and both shortcuts use zero grace time.
+Hyprlock reads the theme each time it starts, so edits apply on the next lock.
 
 ## App launcher
 
@@ -165,6 +216,15 @@ the advanced network editor, and hardware diagnostic/test utilities, and prefers
 apps you have used when the search is empty. To hide another entry, add its
 desktop filename without `.desktop` to the blacklist regexes and restart the
 launcher services. Other installed apps remain discoverable automatically.
+
+Flatpak apps are discovered through their exported desktop entries.
+`launcher-start` adds the user and system Flatpak export directories to
+`XDG_DATA_DIRS` before starting the services, covering both app entries and
+icons while preserving existing search paths. After installing Flatpak or the
+first app into a new user/system installation, run
+`~/.local/bin/launcher-start --restart` in your graphical terminal to refresh
+the search directories. Subsequent app changes in those directories are watched
+by Elephant.
 
 The user desktop entry in
 `walker/.local/share/applications/code-oss.desktop` overrides the packaged name
@@ -306,7 +366,7 @@ Once a remote repository is configured, update another device with:
 ```bash
 cd ~/dotfiles
 git pull --ff-only
-stow --restow --no-folding --target="$HOME" hypr wallpapers scripts waybar walker session-menu
+stow --restow --no-folding --target="$HOME" hypr wallpapers scripts waybar walker session-menu icons
 ```
 
 Commit or otherwise preserve local edits before pulling.
@@ -327,7 +387,7 @@ committing, especially before publishing the repository.
 
 ```bash
 cd ~/dotfiles
-stow --delete --target="$HOME" hypr wallpapers scripts waybar walker session-menu
+stow --delete --target="$HOME" hypr wallpapers scripts waybar walker session-menu icons
 ```
 
 This removes the managed symlinks; the configuration files remain in the repository.

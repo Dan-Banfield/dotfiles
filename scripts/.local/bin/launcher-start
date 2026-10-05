@@ -15,6 +15,16 @@ for program in walker elephant; do
   fi
 done
 
+# Graphical sessions can predate Flatpak's profile script or skip it entirely.
+# Both app entries and icons are exported beneath these data directories.
+export XDG_DATA_DIRS="${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+for flatpak_exports in "${XDG_DATA_HOME:-$HOME/.local/share}/flatpak/exports/share" /var/lib/flatpak/exports/share; do
+  case ":$XDG_DATA_DIRS:" in
+    *":$flatpak_exports:"*) ;;
+    *) export XDG_DATA_DIRS="$XDG_DATA_DIRS:$flatpak_exports" ;;
+  esac
+done
+
 # Import only the display/session variables needed by the two user services.
 session_vars=()
 for name in WAYLAND_DISPLAY DISPLAY HYPRLAND_INSTANCE_SIGNATURE XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CONFIG_HOME XDG_DATA_HOME XDG_DATA_DIRS PATH; do

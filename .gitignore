@@ -9,3 +9,6 @@
 .env.*
 
 .DS_Store
+
+# Generated GTK icon cache; rebuild on each machine.
+icon-theme.cache

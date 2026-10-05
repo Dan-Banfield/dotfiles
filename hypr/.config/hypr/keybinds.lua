@@ -10,6 +10,7 @@ end
 
 -- Windows
 bind("CTRL + ALT + Delete", "Session menu", hl.dsp.exec_cmd('"$HOME/.local/bin/session-menu"'))
+bind("SUPER + L", "Lock screen", hl.dsp.exec_cmd("hyprlock --grace 0"))
 bind("SUPER + Q", "Close window", hl.dsp.window.close())
 bind("SUPER + W", "Close window", hl.dsp.window.close())
 bind("SUPER + V", "Toggle window floating/tiling", hl.dsp.window.float({ action = "toggle" }))
