@@ -29,7 +29,12 @@ def label(text, style, **kwargs):
 
 
 def icon(name, size=30):
-    image = Gtk.Image.new_from_icon_name(name)
+    local_icon = CONFIG_DIR / "icons" / f"{name}.svg"
+    if local_icon.is_file():
+        image = Gtk.Image.new_from_gicon(
+            Gio.FileIcon.new(Gio.File.new_for_path(str(local_icon))))
+    else:
+        image = Gtk.Image.new_from_icon_name(name)
     image.set_pixel_size(size)
     return image
 
@@ -75,7 +80,7 @@ class SessionMenu(Gtk.Application):
         Gtk.StyleContext.add_provider_for_display(
             Gdk.Display.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
-        self.window = Gtk.ApplicationWindow(application=self, title="Session")
+        self.window = Gtk.ApplicationWindow(application=self, title="Power Menu")
         self.window.add_css_class("session-menu-window")
         self.window.set_decorated(False)
         self.window.connect("close-request", self.on_close_request)
@@ -108,8 +113,7 @@ class SessionMenu(Gtk.Application):
         header = Gtk.Box(spacing=12)
         titles = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
         titles.set_hexpand(True)
-        titles.append(label("SESSION", "eyebrow", xalign=0))
-        titles.append(label("What would you like to do?", "heading", xalign=0))
+        titles.append(label("Power Menu", "heading", xalign=0))
         header.append(titles)
         self.close_button = Gtk.Button()
         self.close_button.add_css_class("close-button")
@@ -130,8 +134,6 @@ class SessionMenu(Gtk.Application):
         self.build_actions()
         self.build_confirmation()
         self.build_error()
-        self.footer = label("1–6 choose  ·  Tab / arrows move  ·  Esc close", "footer")
-        self.panel.append(self.footer)
 
         keys = Gtk.EventControllerKey()
         keys.connect("key-pressed", self.on_key)
@@ -158,14 +160,11 @@ class SessionMenu(Gtk.Application):
             image.set_hexpand(True)
             image.set_halign(Gtk.Align.START)
             top.append(image)
-            top.append(label(str(index + 1), "shortcut", valign=Gtk.Align.START))
             content.append(top)
             content.append(label(action.label, "action-title", xalign=0))
-            subtitle = label(action.description, "action-description", xalign=0)
-            content.append(subtitle)
             button.set_child(content)
             grid.attach(button, index % 3, index // 3, 1, 1)
-            self.buttons[action.key] = (button, subtitle)
+            self.buttons[action.key] = button
         self.stack.add_named(grid, "actions")
 
     def build_confirmation(self):
@@ -207,11 +206,9 @@ class SessionMenu(Gtk.Application):
 
     def refresh_actions(self):
         for action in ACTIONS:
-            button, subtitle = self.buttons[action.key]
+            button = self.buttons[action.key]
             enabled = available(action.key)
             button.set_sensitive(enabled)
-            subtitle.set_text(action.description if enabled else
-                              "Not set up" if action.key == "lock" else "Unavailable")
 
     def show_menu(self, error=None):
         if self.closing:
@@ -223,8 +220,6 @@ class SessionMenu(Gtk.Application):
         self.stack.set_visible_child_name("error" if error else "actions")
         if error:
             self.error_description.set_text(error[:400])
-        self.footer.set_text("Esc to go back" if error else
-                             "1–6 choose  ·  Tab / arrows move  ·  Esc close")
         self.window.present()
         self.close_button.grab_focus()
         if not self.opening:
@@ -267,7 +262,6 @@ class SessionMenu(Gtk.Application):
             self.confirm_button.set_label(action.label)
             self.confirm_button.set_sensitive(True)
             self.stack.set_visible_child_name("confirm")
-            self.footer.set_text("Esc to go back")
             self.back_button.grab_focus()
         else:
             self.dismiss(key)
@@ -282,7 +276,6 @@ class SessionMenu(Gtk.Application):
             return
         self.selected_action = None
         self.stack.set_visible_child_name("actions")
-        self.footer.set_text("1–6 choose  ·  Tab / arrows move  ·  Esc close")
         self.close_button.grab_focus()
 
     def run_action(self, key):

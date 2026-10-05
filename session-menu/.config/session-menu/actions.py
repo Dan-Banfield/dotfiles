@@ -16,7 +16,7 @@ class Action:
 ACTIONS = (
     Action("lock", "Lock", "Keep your apps open", "system-lock-screen-symbolic"),
     Action("sleep", "Sleep", "Pause this device", "weather-clear-night-symbolic"),
-    Action("processes", "Processes", "View running processes", "utilities-system-monitor-symbolic"),
+    Action("processes", "Processes", "View running processes", "processes-symbolic"),
     Action("logout", "Log Out", "End this session", "system-log-out-symbolic",
            "Your open apps will close and you will return to the login screen."),
     Action("restart", "Restart", "Reboot this device", "view-refresh-symbolic",
