@@ -68,8 +68,7 @@ window#waybar {
 }
 
 #workspaces button.active,
-#custom-power-profile.performance,
-#clock {
+#custom-power-profile.performance {
     background-color: #8aade0;
     background-image: linear-gradient(110deg,
         #517fc4 0%, #8aade0 35%, #b9d5f4 65%, #759dd2 100%);
@@ -115,7 +114,6 @@ window#waybar.empty #window {
 #clock {
     padding: 0 16px;
     font-weight: 700;
-    animation-duration: 24s;
 }
 
 #custom-launcher:hover,
