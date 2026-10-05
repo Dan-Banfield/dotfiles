@@ -56,6 +56,10 @@ hl.env("HYPRCURSOR_SIZE", cursor_size)
 hl.env("XCURSOR_THEME", "macOS")
 hl.env("XCURSOR_SIZE", cursor_size)
 
+-- Use the installed GTK bridge for both Qt 5 and Qt 6, with a palette-aware style.
+hl.env("QT_QPA_PLATFORMTHEME", "gtk3")
+hl.env("QT_STYLE_OVERRIDE", "Fusion")
+
 -----------------------
 ----- PERMISSIONS -----
 -----------------------

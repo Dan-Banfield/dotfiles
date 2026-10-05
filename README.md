@@ -74,8 +74,8 @@ Clone this repository into `~/dotfiles`, then:
 
 ```bash
 cd ~/dotfiles
-stow --simulate --verbose --no-folding --target="$HOME" hypr wallpapers scripts waybar walker session-menu icons
-stow --verbose --no-folding --target="$HOME" hypr wallpapers scripts waybar walker session-menu icons
+stow --simulate --verbose --no-folding --target="$HOME" hypr wallpapers scripts waybar walker session-menu icons appearance
+stow --verbose --no-folding --target="$HOME" hypr wallpapers scripts waybar walker session-menu icons appearance
 ```
 
 If the preview reports existing files that conflict, back them up outside this
@@ -110,6 +110,31 @@ gtk-update-icon-cache -f -t "$HOME/.local/share/icons/Prism-Charcoal"
 ```
 
 Cache files stay outside Git; the SVGs and theme selection are Stow-managed.
+
+## Dark appearance
+
+GTK 3 uses `Adwaita-dark`, and GTK 4 requests the dark Adwaita variant through
+the settings files in `icons`. Hyprland also sets GNOME's `prefer-dark`
+preference for libadwaita apps and the Settings portal.
+
+The `appearance` package selects GTK for the FileChooser and Settings portals
+in Hyprland, keeping the Hyprland backend for supported desktop interfaces such
+as screencasting. Both Qt 5 and Qt 6 use their installed `gtk3` platform-theme
+plugins to inherit GTK's palette, icons, and dialogs; the built-in Fusion style
+respects that palette. No qt5ct, qt6ct, Kvantum, or Plasma installation is needed
+on this machine. On another Arch installation keep `gtk3`, `qt5-base` and/or
+`qt6-base`, and `xdg-desktop-portal-gtk` installed for the apps you use.
+
+KDE apps using their own colour-scheme manager select the bundled
+**Prism Charcoal** scheme: navy backgrounds, light text, and pastel blue
+selections matching the bar. `kdeglobals` supplies the default scheme and icons.
+Apps with an explicitly chosen per-app colour scheme can retain that override;
+select their Default/System option to use this preference.
+
+Qt environment settings are declared in both Hyprland and `environment.d`,
+so applications opened through user services also inherit them. After first
+stowing `appearance`, log out and back in, then reopen applications. A Hyprland
+reload alone does not update existing applications or resident launcher services.
 
 ## Bar
 
@@ -230,6 +255,21 @@ To apply later changes to `hypridle.conf`, restart Hypridle:
 pkill -x hypridle
 nohup hypridle > ~/.cache/hypridle.log 2>&1 &
 ```
+
+## Login screen
+
+The `sddm` directory contains the **Blue Night** login theme, matching Hyprlock's
+wallpaper, navy card, pastel blue accents, rounded password field, and 12-hour
+clock. It includes native user/session selectors, keyboard layout selection,
+Caps Lock and login feedback, and power controls. Authentication stays with
+SDDM's existing configuration.
+
+Preview with `~/dotfiles/sddm/install.sh --preview`, then install with
+`~/dotfiles/sddm/install.sh`. Installation copies the theme and wallpaper into
+SDDM's system directory, backs up any replaced Blue Night files, and writes a
+theme-only config fragment. It requests sudo in your terminal and applies on
+the next login screen without restarting SDDM. This is separate from Stow's
+home-directory packages. See [sddm/README.md](sddm/README.md) for details.
 
 ## App launcher
 
@@ -410,7 +450,7 @@ Once a remote repository is configured, update another device with:
 ```bash
 cd ~/dotfiles
 git pull --ff-only
-stow --restow --no-folding --target="$HOME" hypr wallpapers scripts waybar walker session-menu icons
+stow --restow --no-folding --target="$HOME" hypr wallpapers scripts waybar walker session-menu icons appearance
 ```
 
 Commit or otherwise preserve local edits before pulling.
@@ -431,7 +471,7 @@ committing, especially before publishing the repository.
 
 ```bash
 cd ~/dotfiles
-stow --delete --target="$HOME" hypr wallpapers scripts waybar walker session-menu icons
+stow --delete --target="$HOME" hypr wallpapers scripts waybar walker session-menu icons appearance
 ```
 
 This removes the managed symlinks; the configuration files remain in the repository.

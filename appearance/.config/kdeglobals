@@ -1,0 +1,11 @@
+[General]
+ColorScheme=PrismCharcoal
+
+[UiSettings]
+ColorScheme=PrismCharcoal
+
+[Icons]
+Theme=Prism-Charcoal
+
+[KDE]
+widgetStyle=Fusion
