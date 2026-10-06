@@ -136,6 +136,49 @@ so applications opened through user services also inherit them. After first
 stowing `appearance`, log out and back in, then reopen applications. A Hyprland
 reload alone does not update existing applications or resident launcher services.
 
+## Keyring and saved passwords
+
+Use GNOME Keyring as the desktop Secret Service for NetworkManager and apps
+such as JetBrains IDEs. Install the provider, its client library, and the
+Seahorse keyring manager, then enable the packaged user units from a terminal
+in your graphical session:
+
+```bash
+sudo pacman -S --needed gnome-keyring libsecret seahorse
+systemctl --user daemon-reload
+systemctl --user enable --now gnome-keyring-daemon.socket gnome-keyring-daemon.service
+```
+
+Log out and sign back in through SDDM with your account password. Arch's SDDM
+PAM configuration already includes GNOME Keyring initialization and unlocking;
+no PAM edits or extra Hyprland daemon are needed. The login keyring's password
+must match your account password for automatic unlocking. If prompted to
+create a keyring, use that password. Seahorse (Passwords and Keys) can manage
+the keyring and change its password. See the
+[GNOME Keyring PAM documentation](https://wiki.gnome.org/Projects/GnomeKeyring/Pam).
+
+The `appearance` package also selects GNOME Keyring for the Secrets portal,
+including apps using the portal from Flatpak. Keyrings and Wi-Fi credentials
+stay outside this repository.
+
+Reconnect to Wi-Fi and save the password once. In `nm-connection-editor`, use
+the password field's storage menu to choose **Store the password only for this
+user**, rather than **Ask for this password every time**. Existing profiles
+configured not to save passwords will still prompt even with a working keyring.
+
+In JetBrains, select **Settings → Appearance & Behavior → System Settings →
+Passwords → In native Keychain** and restart the IDE after installing the
+provider. See [JetBrains' password storage documentation](https://www.jetbrains.com/help/idea/reference-ide-settings-password-safe.html).
+
+To check the service without reading any saved passwords:
+
+```bash
+systemctl --user status gnome-keyring-daemon.service
+gdbus call --session --dest org.freedesktop.secrets \
+  --object-path /org/freedesktop/secrets \
+  --method org.freedesktop.DBus.Properties.Get org.freedesktop.Secret.Service Collections
+```
+
 ## Bar
 
 The `waybar` package supplies the floating blue pill bar. The clock uses
