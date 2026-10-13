@@ -1,0 +1,6 @@
+^/README\.md$
+^/install\.sh$
+^/system($|/)
+^/tests($|/)
+__pycache__
+\.pyc$

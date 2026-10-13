@@ -1,3 +1,6 @@
+---
+page-id: 1
+---
 # Dotfiles
 
 Personal configuration managed with Git and GNU Stow.
@@ -52,6 +55,7 @@ keycodes, with 0 selecting workspace 10.
 | Ctrl + Alt + Delete | Open the session menu |
 | Super + L | Lock the screen with Hyprlock |
 | Super + E / R / M | File manager / launcher / log out |
+| Fn + F6 (touchpad icon) | Toggle the laptop touchpad |
 
 Native window and workspace shortcuts were migrated from the configuration
 backup with personal overrides applied. Alt+number is reserved for silent
@@ -74,13 +78,32 @@ Clone this repository into `~/dotfiles`, then:
 
 ```bash
 cd ~/dotfiles
-stow --simulate --verbose --no-folding --target="$HOME" hypr wallpapers scripts waybar walker session-menu icons appearance
-stow --verbose --no-folding --target="$HOME" hypr wallpapers scripts waybar walker session-menu icons appearance
+stow --simulate --verbose --no-folding --target="$HOME" hypr wallpapers scripts waybar walker session-menu dns-menu icons appearance
+stow --verbose --no-folding --target="$HOME" hypr wallpapers scripts waybar walker session-menu dns-menu icons appearance
 ```
 
 If the preview reports existing files that conflict, back them up outside this
 repository and move them aside before applying. Keep unrelated configuration
 files in place.
+
+## Touchpad
+
+Fn+F6 sends `XF86TouchpadToggle` on this ASUS keyboard. `touchpad.lua` toggles
+only `asup1200:00-093a:200a-touchpad`, leaving the external mouse enabled, and
+shows a brief notification. The touchpad starts enabled after login or a config
+reload. On another laptop, use `hyprctl devices` and change `name` in that module.
+Ordinary F6 remains available to applications.
+
+## Change DNS
+
+The `dns-menu` package adds **Change DNS** to Walker: a navy, animated menu with
+Automatic, Standard DNS, DNS over TLS, and DNS over HTTPS choices, provider
+presets, and custom server inputs. It uses `dnsproxy` and a root-owned helper
+installed separately from Stow. The installer keeps the current DNS settings;
+the menu applies a choice only after system authentication, tests it, and rolls
+back failed switches. Select Automatic to restore network-provided DNS,
+including VPN/private-network DNS. See [dns-menu/README.md](dns-menu/README.md)
+for installation, operation, and recovery commands.
 
 ## Folder icons
 
@@ -116,6 +139,23 @@ Cache files stay outside Git; the SVGs and theme selection are Stow-managed.
 GTK 3 uses `Adwaita-dark`, and GTK 4 requests the dark Adwaita variant through
 the settings files in `icons`. Hyprland also sets GNOME's `prefer-dark`
 preference for libadwaita apps and the Settings portal.
+
+The GTK 3 user stylesheet also imports GTK's built-in dark Adwaita CSS. This
+keeps legacy dialogs such as NetworkManager's password prompt and the GTK
+file picker dark when their effective theme settings still select light mode.
+It applies to GTK 3 apps and overrides their theme styling; GTK 4 apps and the
+custom Walker/session-menu styles keep their existing configuration. No extra
+theme package is needed. GTK 3 loads the stylesheet when each process starts,
+so log out and back in after stowing `icons` to refresh the applet and portals.
+See [GTK's stylesheet loading documentation](https://docs.gtk.org/gtk3/class.CssProvider.html).
+
+Hyprland sets GTK 3's saved file-picker size to **900 × 600** at login. The
+picker can still be resized normally during the session; the next login restores
+this starting size. To apply it immediately, close any open file picker and run:
+
+```bash
+gsettings set org.gtk.Settings.FileChooser window-size '(900, 600)'
+```
 
 The `appearance` package selects GTK for the FileChooser and Settings portals
 in Hyprland, keeping the Hyprland backend for supported desktop interfaces such
@@ -496,7 +536,7 @@ Once a remote repository is configured, update another device with:
 ```bash
 cd ~/dotfiles
 git pull --ff-only
-stow --restow --no-folding --target="$HOME" hypr wallpapers scripts waybar walker session-menu icons appearance
+stow --restow --no-folding --target="$HOME" hypr wallpapers scripts waybar walker session-menu dns-menu icons appearance
 ```
 
 Commit or otherwise preserve local edits before pulling.
@@ -517,7 +557,7 @@ committing, especially before publishing the repository.
 
 ```bash
 cd ~/dotfiles
-stow --delete --target="$HOME" hypr wallpapers scripts waybar walker session-menu icons appearance
+stow --delete --target="$HOME" hypr wallpapers scripts waybar walker session-menu dns-menu icons appearance
 ```
 
 This removes the managed symlinks; the configuration files remain in the repository.

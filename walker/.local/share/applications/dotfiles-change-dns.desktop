@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Change DNS
+Comment=Choose DNS servers and DNS over TLS or HTTPS
+Exec=sh -c "exec ~/.local/bin/change-dns"
+Icon=preferences-system-network
+Terminal=false
+StartupNotify=false
+Categories=Settings;
+Keywords=dns;network;internet;https;tls;privacy;resolver;

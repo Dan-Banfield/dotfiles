@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Reuse an existing authentication agent, or start the installed KDE agent.
+if [[ ${1:-} != --check && ${1:-} != --quit && -x /usr/lib/polkit-kde-authentication-agent-1 ]]; then
+    if ! pgrep -u "$UID" -f '[p]olkit.*authentication-agent|[h]yprpolkitagent' >/dev/null 2>&1; then
+        /usr/lib/polkit-kde-authentication-agent-1 >/dev/null 2>&1 &
+    fi
+fi
+
+# Activate the warm menu directly, as with the existing power menu.
+if (($# == 0)) && command -v gdbus >/dev/null 2>&1; then
+    if gdbus call --session --timeout 1 --dest dev.dotfiles.DNSMenu \
+        --object-path /dev/dotfiles/DNSMenu \
+        --method org.freedesktop.Application.Activate '{}' >/dev/null 2>&1; then
+        exit 0
+    fi
+fi
+exec python "${XDG_CONFIG_HOME:-$HOME/.config}/dns-menu/menu.py" "$@"

@@ -1,0 +1,87 @@
+@define-color text #c1d5f0;
+@define-color muted #8395af;
+@define-color accent #8aade0;
+
+* {
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 12px;
+    text-shadow: none;
+}
+.dns-window { background: rgba(5, 10, 19, 0.62); color: @text; }
+.dns-panel {
+    background: linear-gradient(145deg, #14243e, #101c30 30%, #0d1423 80%);
+    border: 1px solid rgba(138, 173, 224, 0.32);
+    border-radius: 28px;
+    padding: 28px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    transition: opacity 180ms ease-out;
+}
+.dns-open .dns-panel { opacity: 1; }
+.heading { color: #e0edff; font-size: 22px; font-weight: 700; }
+.current { color: #a8c6ec; font-size: 10px; }
+.field-label { color: @text; font-size: 11px; font-weight: 700; }
+.hint { color: @muted; font-size: 10px; }
+.message { color: #f2b6c7; font-size: 11px; }
+.message.success { color: #b6ddcc; }
+.close-button {
+    background: rgba(138, 173, 224, 0.06);
+    color: @muted;
+    border: 1px solid rgba(138, 173, 224, 0.12);
+    border-radius: 999px;
+    padding: 9px;
+    box-shadow: none;
+    transition: background-color 140ms ease-out, color 140ms ease-out;
+}
+.close-button:hover, .close-button:focus-visible { background: #263b5d; color: #e0edff; }
+dropdown > button, entry, .server-box {
+    background: #142139;
+    color: @text;
+    border: 1px solid rgba(138, 173, 224, 0.24);
+    border-radius: 13px;
+    box-shadow: none;
+    transition: border-color 140ms ease-out, background-color 140ms ease-out;
+}
+dropdown > button, entry { min-height: 24px; padding: 10px 13px; }
+dropdown > button:hover, dropdown > button:focus-visible, entry:focus-within, .server-box:focus-within {
+    background: #182b46;
+    border-color: #8aade0;
+}
+dropdown arrow { color: @accent; }
+dropdown popover contents {
+    background: #0d1423;
+    color: @text;
+    border: 1px solid #39485e;
+    border-radius: 16px;
+    padding: 6px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+dropdown popover listview { background: transparent; color: @text; }
+dropdown popover row { border-radius: 10px; padding: 10px 12px; }
+dropdown popover row:hover { background: #203758; }
+dropdown popover row:selected {
+    background: linear-gradient(110deg, #517fc4, #8aade0 65%, #b9d5f4);
+    color: #101c30;
+}
+.server-editor, .server-editor text { background: transparent; color: @text; }
+.server-editor { padding: 12px 13px; caret-color: #b9d5f4; }
+.server-editor text selection { background: #8aade0; color: #101c30; }
+entry selection { background: #8aade0; color: #101c30; }
+.primary-button, .secondary-button {
+    border-radius: 13px;
+    padding: 12px 18px;
+    font-weight: 700;
+    box-shadow: none;
+    transition: background-color 140ms ease-out, border-color 140ms ease-out;
+}
+.primary-button {
+    background: linear-gradient(110deg, #517fc4, #8aade0 65%, #b9d5f4);
+    color: #101c30;
+    border: 1px solid rgba(185, 213, 244, 0.5);
+}
+.primary-button:hover, .primary-button:focus-visible { border-color: #e0edff; }
+.secondary-button { background: #172740; color: @text; border: 1px solid #39485e; }
+.secondary-button:hover, .secondary-button:focus-visible { background: #263b5d; }
+button:disabled { opacity: 0.45; }
+spinner { color: @accent; }
+tooltip { background: #0d1423; color: @text; border: 1px solid #39485e; border-radius: 10px; }

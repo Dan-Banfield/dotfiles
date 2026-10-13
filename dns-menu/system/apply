@@ -1,0 +1,158 @@
+#!/usr/bin/python3 -I
+"""Change only this tool's DNS files, rolling back failed switches."""
+
+from pathlib import Path
+import configparser
+import fcntl
+import json
+import os
+import secrets
+import socket
+import struct
+import subprocess
+import sys
+import tempfile
+import time
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from model import validate_settings, proxy_config
+
+DIRECTORY = Path("/etc/dotfiles-dns")
+STATE = DIRECTORY / "settings.json"
+PROXY = DIRECTORY / "proxy.yaml"
+NM_CONFIG = Path("/etc/NetworkManager/conf.d/90-dotfiles-dns.conf")
+RESOLV = Path("/etc/resolv.conf")
+UNIT = "dotfiles-dns.service"
+MARKER = b"# Managed by dotfiles Change DNS\n"
+
+
+def run(*args, check=True):
+    process = subprocess.run(args, capture_output=True, text=True, timeout=25,
+                             env={"PATH": "/usr/bin", "LANG": "C.UTF-8"})
+    if check and process.returncode:
+        raise RuntimeError((process.stderr or process.stdout).strip()[:700] or "The system declined the DNS change.")
+    return process
+
+
+def atomic_write(path, content):
+    path.parent.mkdir(parents=True, exist_ok=True, mode=0o755)
+    fd, temporary = tempfile.mkstemp(prefix=".dns-", dir=path.parent)
+    try:
+        with os.fdopen(fd, "wb") as stream:
+            stream.write(content)
+            stream.flush()
+            os.fsync(stream.fileno())
+            os.fchmod(stream.fileno(), 0o644)
+        os.replace(temporary, path)
+    finally:
+        Path(temporary).unlink(missing_ok=True)
+
+
+def check_network_manager():
+    config = configparser.ConfigParser(interpolation=None, strict=False)
+    config.read_string(run("/usr/bin/NetworkManager", "--print-config").stdout)
+    plugin = config.get("main", "dns", fallback="default")
+    if plugin not in ("default", ""):
+        raise RuntimeError("Change DNS requires NetworkManager's default DNS backend. Your existing DNS service was left unchanged.")
+    if NM_CONFIG.exists() and not NM_CONFIG.read_bytes().startswith(MARKER):
+        raise RuntimeError("The DNS configuration file belongs to another setup; it was left unchanged.")
+
+
+def reload_dns():
+    # nmcli takes one comma-separated flags argument, including on rollback.
+    run("/usr/bin/nmcli", "general", "reload", "conf,dns-full")
+
+
+def probe():
+    # Verify an actual answer before making the new proxy the system resolver.
+    identifier = secrets.randbelow(65536)
+    question = b"\x07example\x03com\x00" + struct.pack("!HH", 1, 1)
+    query = struct.pack("!HHHHHH", identifier, 0x0100, 1, 0, 0, 0) + question
+    deadline = time.monotonic() + 18
+    while True:
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as client:
+                client.settimeout(2)
+                client.connect(("127.0.0.1", 53))
+                client.send(query)
+                answer = client.recv(4096)
+            break
+        except (TimeoutError, ConnectionRefusedError):
+            if time.monotonic() >= deadline:
+                raise RuntimeError("The selected DNS server did not answer. Check its address and your network connection.") from None
+            time.sleep(0.2)
+    if len(answer) < 12:
+        raise RuntimeError("The selected DNS server returned an invalid response.")
+    response_id, flags, _questions, answers, _authority, _additional = struct.unpack("!HHHHHH", answer[:12])
+    if response_id != identifier or not flags & 0x8000 or flags & 0xF or not answers:
+        raise RuntimeError("The selected DNS server could not resolve the test domain.")
+
+
+def apply(settings):
+    check_network_manager()
+    snapshot = {path: path.read_bytes() if path.exists() else None
+                for path in (STATE, PROXY, NM_CONFIG)}
+    was_active = run("/usr/bin/systemctl", "is-active", "--quiet", UNIT, check=False).returncode == 0
+    was_enabled = run("/usr/bin/systemctl", "is-enabled", "--quiet", UNIT, check=False).returncode == 0
+    try:
+        if settings["mode"] == "automatic":
+            NM_CONFIG.unlink(missing_ok=True)
+            reload_dns()
+            run("/usr/bin/systemctl", "disable", "--now", UNIT)
+        else:
+            atomic_write(PROXY, proxy_config(settings))
+            run("/usr/bin/systemctl", "enable", UNIT)
+            run("/usr/bin/systemctl", "restart", UNIT)
+            probe()
+            atomic_write(NM_CONFIG, MARKER + b"[global-dns]\n\n[global-dns-domain-*]\nservers=127.0.0.1\n")
+            reload_dns()
+            nameservers = [line.split()[1] for line in RESOLV.read_text().splitlines()
+                           if len(line.split()) > 1 and line.split()[0] == "nameserver"]
+            if nameservers != ["127.0.0.1"]:
+                raise RuntimeError("NetworkManager did not switch the system resolver. The previous settings were restored.")
+        atomic_write(STATE, (json.dumps(settings, indent=2) + "\n").encode())
+    except Exception as original:
+        failures = []
+        for path, content in snapshot.items():
+            try:
+                if content is None:
+                    path.unlink(missing_ok=True)
+                else:
+                    atomic_write(path, content)
+            except OSError as error:
+                failures.append(str(error))
+        for args in (("enable" if was_enabled else "disable", UNIT),
+                     ("restart" if was_active else "stop", UNIT)):
+            try:
+                run("/usr/bin/systemctl", *args)
+            except Exception as error:
+                failures.append(str(error))
+        try:
+            reload_dns()
+        except Exception as error:
+            failures.append(str(error))
+        suffix = " Previous DNS settings were restored." if not failures else " Rollback needs attention: " + "; ".join(failures)
+        raise RuntimeError(str(original) + suffix) from original
+
+
+def main():
+    if sys.argv[1:] != ["--apply"] or os.geteuid() != 0:
+        print("This helper must be invoked through Change DNS with administrator authentication.", file=sys.stderr)
+        return 1
+    try:
+        payload = sys.stdin.buffer.read(8193)
+        if len(payload) > 8192:
+            raise ValueError("DNS settings are too large.")
+        settings = validate_settings(json.loads(payload))
+        with open("/run/dotfiles-dns.lock", "a") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            apply(settings)
+        print(json.dumps({"ok": True, "settings": settings}))
+        return 0
+    except (ValueError, RuntimeError, OSError, subprocess.SubprocessError) as error:
+        print(str(error), file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -9,6 +9,8 @@ require("animations")
 require("wallpaper")
 require("launcher")
 require("session")
+require("touchpad")
+require("dns-menu")
 
 ---------------------
 ---- MY PROGRAMS ----
@@ -29,6 +31,8 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'")
     hl.exec_cmd("gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'")
     hl.exec_cmd("gsettings set org.gnome.desktop.interface icon-theme 'Prism-Charcoal'")
+    -- Start GTK file pickers at a useful size rather than a remembered full-height size.
+    hl.exec_cmd("gsettings set org.gtk.Settings.FileChooser window-size '(900, 600)'")
 end)
 
 -- See https://wiki.hypr.land/Configuring/Basics/Autostart/
